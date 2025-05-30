@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, type FormEvent, type ChangeEvent } from "react";
@@ -98,30 +99,30 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
   };
 
   return (
-    <Card className="w-full shadow-lg">
+    <Card className="w-full border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Camera className="h-6 w-6 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <Camera className="h-5 w-5 text-primary" />
           Scan Your Food
         </CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="food-image-input" className="text-base">Upload Food Image</Label>
+            <Label htmlFor="food-image-input" className="text-sm font-medium">Upload Food Image</Label>
             <Input
               id="food-image-input"
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className="file:text-primary file:font-semibold hover:file:bg-primary/10"
+              className="file:text-primary file:font-semibold hover:file:bg-primary/10 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border file:border-primary/20"
               disabled={isLoading}
             />
-            {fileName && <p className="text-sm text-muted-foreground mt-1">Selected: {fileName}</p>}
+            {fileName && <p className="text-xs text-muted-foreground mt-1">Selected: {fileName}</p>}
           </div>
 
           {imagePreview && (
-            <div className="mt-4 border border-dashed border-border rounded-md p-4 flex justify-center items-center max-h-72 overflow-hidden bg-muted/20">
+            <div className="mt-4 border border-dashed border-border rounded-lg p-4 flex justify-center items-center max-h-72 overflow-hidden bg-background">
               <Image
                 src={imagePreview}
                 alt="Food preview"
@@ -133,7 +134,7 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row justify-between gap-2">
+        <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 pt-4">
           <Button type="button" variant="outline" onClick={handleReset} disabled={isLoading || !imagePreview} className="w-full sm:w-auto">
             <RefreshCw className="mr-2 h-4 w-4" /> Reset
           </Button>

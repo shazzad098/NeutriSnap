@@ -14,10 +14,11 @@ export default function HomePage() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeFoodPhotoOutput | null>(null);
   const [analysisError, setAnalysisError] = useState<string>("");
   const [newScanId, setNewScanId] = useState<string | undefined>(undefined);
-  const [currentYear, setCurrentYear] = useState<number | string>("");
+  const [currentYear, setCurrentYear] = useState<string>(""); // Keep as string to avoid initial 0
 
   useEffect(() => {
-    setCurrentYear(new Date().getFullYear());
+    // This ensures the year is only set on the client after hydration
+    setCurrentYear(new Date().getFullYear().toString());
   }, []);
 
 
@@ -35,8 +36,8 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <main className="flex-grow container mx-auto px-4 py-6 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
           <div className="space-y-6">
             <ImageUploadForm 
               onAnalysisComplete={handleAnalysisComplete}
@@ -45,7 +46,7 @@ export default function HomePage() {
           </div>
           <div className="space-y-6">
             {analysisError && (
-              <Alert variant="destructive" className="shadow-md">
+              <Alert variant="destructive" className="border">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Analysis Error</AlertTitle>
                 <AlertDescription>{analysisError}</AlertDescription>
@@ -56,8 +57,8 @@ export default function HomePage() {
         </div>
         <ScanHistorySection newScanId={newScanId} />
       </main>
-      <footer className="py-6 text-center text-sm text-muted-foreground border-t border-border mt-auto">
-        <p>&copy; {currentYear || " "} NutriSnap. Your AI Powered Nutrition Analyzer.</p>
+      <footer className="py-6 text-center text-xs text-muted-foreground border-t border-border mt-auto">
+        <p>&copy; {currentYear || new Date().getFullYear().toString()} NutriSnap. Your AI Powered Nutrition Analyzer.</p>
       </footer>
     </div>
   );

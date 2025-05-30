@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -9,7 +10,7 @@ export default function Header() {
   const { user, loading, signInAnonymously, signOutUser } = useAuthContext();
 
   return (
-    <header className="bg-card shadow-md sticky top-0 z-50">
+    <header className="bg-background border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-primary hover:opacity-80 transition-opacity">
           <Leaf className="h-7 w-7" />

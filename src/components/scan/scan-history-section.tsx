@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,42 +7,10 @@ import { firestore } from "@/lib/firebase";
 import type { ScanData } from "@/types";
 import { collection, query, orderBy, onSnapshot, type DocumentData, type QuerySnapshot } from "firebase/firestore";
 import ScanHistoryItem from "./scan-history-item";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ListCollapse, Info } from "lucide-react";
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-async function fetchScanHistory(userId: string): Promise<ScanData[]> {
-  const scansCol = collection(firestore, `users/${userId}/scans`);
-  const q = query(scansCol, orderBy("timestamp", "desc"));
-  
-  // This is a simplified fetch for useQuery. For real-time, onSnapshot is better but harder with react-query's default.
-  // For this example, we'll use onSnapshot within useEffect for real-time updates and not rely on react-query for this specific real-time part.
-  // Or, we can remove real-time for simplicity and use getDocs with react-query.
-  // Let's use onSnapshot and manage state locally.
-  return new Promise((resolve, reject) => {
-    const unsubscribe = onSnapshot(q, 
-      (querySnapshot: QuerySnapshot<DocumentData>) => {
-        const history: ScanData[] = [];
-        querySnapshot.forEach((doc) => {
-          history.push({ id: doc.id, ...doc.data() } as ScanData);
-        });
-        resolve(history);
-        // Note: In a real app, you might want to manage unsubscribe more carefully
-        // or integrate real-time updates differently with a state management library.
-        // unsubscribe(); // Don't unsubscribe immediately if you want real-time updates.
-      }, 
-      (error) => {
-        console.error("Error fetching scan history: ", error);
-        reject(error);
-      }
-    );
-    // To prevent memory leaks, this promise needs to handle unsubscription,
-    // but for simple useQuery, it's easier if it's not a long-lived subscription.
-    // For now, this will fetch once effectively, or keep listening if not unsubscribed.
-  });
-}
-
+import { useQueryClient } from '@tanstack/react-query'; // Removed useQuery as it wasn't fully utilized for real-time
 
 export default function ScanHistorySection({ newScanId }: { newScanId?: string }) {
   const { user, loading: authLoading } = useAuthContext();
@@ -51,10 +20,10 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
 
   useEffect(() => {
     if (newScanId && user?.uid) {
-      // Invalidate and refetch when a new scan is added.
-      // This is a bit of a workaround for real-time with react-query or manual state.
-      // A more robust solution might use websockets or a dedicated real-time library with react-query.
-      queryClient.invalidateQueries({ queryKey: ['scanHistory', user.uid] });
+      // Instead of direct invalidation, the onSnapshot listener will update the history.
+      // However, if you were using react-query for the initial fetch, invalidation would be correct.
+      // For this setup, newScanId mainly serves as a trigger for a potential UI update if needed elsewhere.
+      // queryClient.invalidateQueries({ queryKey: ['scanHistory', user.uid] }); // Not strictly needed with onSnapshot for this component's state
     }
   }, [newScanId, user?.uid, queryClient]);
   
@@ -76,31 +45,35 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
         (error) => {
           console.error("Error fetching scan history: ", error);
           setIsLoading(false);
+          // Optionally, show a toast or error message to the user
         }
       );
       return () => unsubscribe(); // Cleanup subscription on component unmount
     } else {
       setScanHistory([]);
-      setIsLoading(false);
+      if (!authLoading) { // Only set isLoading to false if auth is not also loading
+        setIsLoading(false);
+      }
     }
-  }, [user?.uid]);
+  }, [user?.uid, authLoading]);
 
 
   if (authLoading || (isLoading && user)) {
     return (
-      <Card className="mt-8 shadow-lg">
+      <Card className="mt-8 border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ListCollapse className="h-6 w-6 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <ListCollapse className="h-5 w-5 text-primary" />
             Scan History
           </CardTitle>
+           <CardDescription>Loading your previous scans...</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 p-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="p-4 border rounded-md space-y-2">
-              <Skeleton className="h-5 w-3/4" />
+            <div key={i} className="p-4 border rounded-lg space-y-2 bg-background">
+              <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-3 w-1/2" />
-              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-8 w-full" />
             </div>
           ))}
         </CardContent>
@@ -110,16 +83,16 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
 
   if (!user) {
     return (
-      <Card className="mt-8 shadow-lg">
+      <Card className="mt-8 border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ListCollapse className="h-6 w-6 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <ListCollapse className="h-5 w-5 text-primary" />
             Scan History
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-center py-8">
-          <Info className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">Sign in to view your scan history.</p>
+        <CardContent className="text-center py-10">
+          <Info className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground text-sm">Sign in to view your scan history.</p>
         </CardContent>
       </Card>
     );
@@ -127,31 +100,33 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
 
   if (scanHistory.length === 0) {
     return (
-      <Card className="mt-8 shadow-lg">
+      <Card className="mt-8 border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ListCollapse className="h-6 w-6 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <ListCollapse className="h-5 w-5 text-primary" />
             Scan History
           </CardTitle>
+           <CardDescription>Your scanned items will appear here.</CardDescription>
         </CardHeader>
-        <CardContent className="text-center py-8">
-           <Info className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">No scans found. Start scanning to see your history!</p>
+        <CardContent className="text-center py-10">
+           <Info className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground text-sm">No scans found. Start scanning to see your history!</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="mt-8 shadow-lg">
+    <Card className="mt-8 border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ListCollapse className="h-6 w-6 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <ListCollapse className="h-5 w-5 text-primary" />
           Scan History
         </CardTitle>
+        <CardDescription>A log of your previously analyzed food items.</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="max-h-[500px] overflow-y-auto pr-2 space-y-4">
+      <CardContent className="p-4">
+        <div className="max-h-[500px] overflow-y-auto pr-2 space-y-3">
           {scanHistory.map((scan) => (
             <ScanHistoryItem key={scan.id} scan={scan} />
           ))}
