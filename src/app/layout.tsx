@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'NutriSnap - Food Nutrition Analyzer',
-  description: 'Capture food images and get detailed nutritional info.',
+  description: 'খাবারের ছবি তুলুন এবং বিস্তারিত পুষ্টি তথ্য পান।', // Translated
 };
 
 
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="bn" suppressHydrationWarning> {/* Changed lang to bn */}
       <body 
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}

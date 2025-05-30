@@ -11,8 +11,6 @@ interface NutritionResultCardProps {
 export default function NutritionResultCard({ data }: NutritionResultCardProps) {
   if (!data) return null;
 
-  // Parse the nutrition information string into a list of items
-  // Assumes nutritionInformation is a string with facts separated by newlines
   const nutritionItems = data.nutritionInformation
     .split('\n')
     .map(item => item.trim())
@@ -23,13 +21,13 @@ export default function NutritionResultCard({ data }: NutritionResultCardProps) 
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
            <Leaf className="h-5 w-5 text-primary" />
-          Nutrition Insights
+           পুষ্টি সম্পর্কিত তথ্য {/* Nutrition Insights */}
         </CardTitle>
-        <CardDescription>Analysis for: <span className="font-semibold text-foreground">{data.foodName}</span></CardDescription>
+        <CardDescription>এর জন্য বিশ্লেষণ: <span className="font-semibold text-foreground">{data.foodName}</span></CardDescription> {/* Analysis for: */}
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-48 w-full rounded-lg border p-4 bg-muted/20">
-          <h4 className="font-semibold mb-2 text-foreground text-sm">Detailed Information:</h4>
+          <h4 className="font-semibold mb-2 text-foreground text-sm">বিস্তারিত তথ্য:</h4> {/* Detailed Information: */}
           {nutritionItems.length > 0 ? (
             <ul className="list-disc pl-5 space-y-1 text-sm text-foreground/90 font-sans leading-relaxed">
               {nutritionItems.map((item, index) => (
@@ -37,7 +35,7 @@ export default function NutritionResultCard({ data }: NutritionResultCardProps) 
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground font-sans leading-relaxed">No detailed nutrition information available.</p>
+            <p className="text-sm text-muted-foreground font-sans leading-relaxed">কোন বিস্তারিত পুষ্টি তথ্য পাওয়া যায়নি।</p> /* No detailed nutrition information available. */
           )}
         </ScrollArea>
       </CardContent>

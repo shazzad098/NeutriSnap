@@ -33,8 +33,8 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
       const reader = new FileReader();
       reader.onloadend = () => {
         const dataUri = reader.result as string;
-        setImagePreview(dataUri); // For previewing the image
-        setImageDataUri(dataUri); // For sending to the server action
+        setImagePreview(dataUri); 
+        setImageDataUri(dataUri); 
       };
       reader.readAsDataURL(file);
     } else {
@@ -48,37 +48,37 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
     event.preventDefault();
     if (!imageDataUri) {
       toast({
-        title: "No Image Selected",
-        description: "Please select an image to analyze.",
+        title: "কোন ছবি নির্বাচন করা হয়নি", // No Image Selected
+        description: "বিশ্লেষণ করার জন্য অনুগ্রহ করে একটি ছবি নির্বাচন করুন।", // Please select an image to analyze.
         variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    onAnalysisError(""); // Clear previous errors
+    onAnalysisError(""); 
 
     try {
       const result = await analyzeImageAction(imageDataUri, user?.uid);
       if (result.success && result.data) {
         onAnalysisComplete(result.data, result.scanId);
         toast({
-          title: "Analysis Complete",
-          description: `Identified: ${result.data.foodName}`,
+          title: "বিশ্লেষণ সম্পন্ন", // Analysis Complete
+          description: `শনাক্ত করা হয়েছে: ${result.data.foodName}`, // Identified:
         });
       } else {
-        onAnalysisError(result.error || "Analysis failed.");
+        onAnalysisError(result.error || "বিশ্লেষণ ব্যর্থ হয়েছে।"); // Analysis failed.
         toast({
-          title: "Analysis Failed",
-          description: result.error || "An unknown error occurred.",
+          title: "বিশ্লেষণ ব্যর্থ", // Analysis Failed
+          description: result.error || "একটি অজানা ত্রুটি ঘটেছে।", // An unknown error occurred.
           variant: "destructive",
         });
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+      const errorMessage = error instanceof Error ? error.message : "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে।"; // An unexpected error occurred.
       onAnalysisError(errorMessage);
       toast({
-        title: "Error",
+        title: "ত্রুটি", // Error
         description: errorMessage,
         variant: "destructive",
       });
@@ -91,10 +91,10 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
     setImagePreview(null);
     setImageDataUri(null);
     setFileName(null);
-    onAnalysisError(""); // Clear any displayed error related to analysis
+    onAnalysisError(""); 
     const fileInput = document.getElementById('food-image-input') as HTMLInputElement;
     if (fileInput) {
-      fileInput.value = ""; // Reset file input
+      fileInput.value = ""; 
     }
   };
 
@@ -103,13 +103,13 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
           <Camera className="h-5 w-5 text-primary" />
-          Scan Your Food
+          আপনার খাবার স্ক্যান করুন {/* Scan Your Food */}
         </CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="food-image-input" className="text-sm font-medium">Upload Food Image</Label>
+            <Label htmlFor="food-image-input" className="text-sm font-medium">খাবারের ছবি আপলোড করুন</Label> {/* Upload Food Image */}
             <Input
               id="food-image-input"
               type="file"
@@ -118,7 +118,7 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
               className="file:text-primary file:font-semibold hover:file:bg-primary/10 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border file:border-primary/20"
               disabled={isLoading}
             />
-            {fileName && <p className="text-xs text-muted-foreground mt-1">Selected: {fileName}</p>}
+            {fileName && <p className="text-xs text-muted-foreground mt-1">নির্বাচিত: {fileName}</p>} {/* Selected */}
           </div>
 
           {imagePreview && (
@@ -136,7 +136,7 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row justify-between gap-2 pt-4">
           <Button type="button" variant="outline" onClick={handleReset} disabled={isLoading || !imagePreview} className="w-full sm:w-auto">
-            <RefreshCw className="mr-2 h-4 w-4" /> Reset
+            <RefreshCw className="mr-2 h-4 w-4" /> রিসেট {/* Reset */}
           </Button>
           <Button type="submit" disabled={isLoading || !imageDataUri} className="w-full sm:w-auto">
             {isLoading ? (
@@ -144,7 +144,7 @@ export default function ImageUploadForm({ onAnalysisComplete, onAnalysisError }:
             ) : (
               <Camera className="mr-2 h-4 w-4" />
             )}
-            {isLoading ? "Analyzing..." : "Analyze Food"}
+            {isLoading ? "বিশ্লেষণ করা হচ্ছে..." : "খাবার বিশ্লেষণ করুন"} {/* Analyzing... : Analyze Food */}
           </Button>
         </CardFooter>
       </form>

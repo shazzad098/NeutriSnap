@@ -10,7 +10,7 @@ import ScanHistoryItem from "./scan-history-item";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ListCollapse, Info } from "lucide-react";
-import { useQueryClient } from '@tanstack/react-query'; // Removed useQuery as it wasn't fully utilized for real-time
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function ScanHistorySection({ newScanId }: { newScanId?: string }) {
   const { user, loading: authLoading } = useAuthContext();
@@ -20,10 +20,7 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
 
   useEffect(() => {
     if (newScanId && user?.uid) {
-      // Instead of direct invalidation, the onSnapshot listener will update the history.
-      // However, if you were using react-query for the initial fetch, invalidation would be correct.
-      // For this setup, newScanId mainly serves as a trigger for a potential UI update if needed elsewhere.
-      // queryClient.invalidateQueries({ queryKey: ['scanHistory', user.uid] }); // Not strictly needed with onSnapshot for this component's state
+      // onSnapshot handles updates, so direct invalidation might not be strictly needed here for this component's own state
     }
   }, [newScanId, user?.uid, queryClient]);
   
@@ -45,13 +42,12 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
         (error) => {
           console.error("Error fetching scan history: ", error);
           setIsLoading(false);
-          // Optionally, show a toast or error message to the user
         }
       );
-      return () => unsubscribe(); // Cleanup subscription on component unmount
+      return () => unsubscribe(); 
     } else {
       setScanHistory([]);
-      if (!authLoading) { // Only set isLoading to false if auth is not also loading
+      if (!authLoading) { 
         setIsLoading(false);
       }
     }
@@ -64,9 +60,9 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <ListCollapse className="h-5 w-5 text-primary" />
-            Scan History
+            স্ক্যান ইতিহাস {/* Scan History */}
           </CardTitle>
-           <CardDescription>Loading your previous scans...</CardDescription>
+           <CardDescription>আপনার পূর্ববর্তী স্ক্যানগুলি লোড হচ্ছে...</CardDescription> {/* Loading your previous scans... */}
         </CardHeader>
         <CardContent className="space-y-3 p-4">
           {[...Array(3)].map((_, i) => (
@@ -87,12 +83,12 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <ListCollapse className="h-5 w-5 text-primary" />
-            Scan History
+            স্ক্যান ইতিহাস {/* Scan History */}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center py-10">
           <Info className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground text-sm">Sign in to view your scan history.</p>
+          <p className="text-muted-foreground text-sm">আপনার স্ক্যান ইতিহাস দেখতে সাইন ইন করুন।</p> {/* Sign in to view your scan history. */}
         </CardContent>
       </Card>
     );
@@ -104,13 +100,13 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <ListCollapse className="h-5 w-5 text-primary" />
-            Scan History
+            স্ক্যান ইতিহাস {/* Scan History */}
           </CardTitle>
-           <CardDescription>Your scanned items will appear here.</CardDescription>
+           <CardDescription>আপনার স্ক্যান করা আইটেমগুলি এখানে প্রদর্শিত হবে।</CardDescription> {/* Your scanned items will appear here. */}
         </CardHeader>
         <CardContent className="text-center py-10">
            <Info className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground text-sm">No scans found. Start scanning to see your history!</p>
+          <p className="text-muted-foreground text-sm">কোন স্ক্যান পাওয়া যায়নি। আপনার ইতিহাস দেখতে স্ক্যান করা শুরু করুন!</p> {/* No scans found. Start scanning to see your history! */}
         </CardContent>
       </Card>
     );
@@ -121,9 +117,9 @@ export default function ScanHistorySection({ newScanId }: { newScanId?: string }
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl">
           <ListCollapse className="h-5 w-5 text-primary" />
-          Scan History
+          স্ক্যান ইতিহাস {/* Scan History */}
         </CardTitle>
-        <CardDescription>A log of your previously analyzed food items.</CardDescription>
+        <CardDescription>আপনার পূর্বে বিশ্লেষণ করা খাদ্য আইটেমগুলির একটি লগ।</CardDescription> {/* A log of your previously analyzed food items. */}
       </CardHeader>
       <CardContent className="p-4">
         <div className="max-h-[500px] overflow-y-auto pr-2 space-y-3">

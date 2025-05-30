@@ -14,10 +14,9 @@ export default function HomePage() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeFoodPhotoOutput | null>(null);
   const [analysisError, setAnalysisError] = useState<string>("");
   const [newScanId, setNewScanId] = useState<string | undefined>(undefined);
-  const [currentYear, setCurrentYear] = useState<string>(""); // Keep as string to avoid initial 0
+  const [currentYear, setCurrentYear] = useState<string>(""); 
 
   useEffect(() => {
-    // This ensures the year is only set on the client after hydration
     setCurrentYear(new Date().getFullYear().toString());
   }, []);
 
@@ -25,7 +24,7 @@ export default function HomePage() {
   const handleAnalysisComplete = (data: AnalyzeFoodPhotoOutput, scanId?: string) => {
     setAnalysisResult(data);
     setAnalysisError("");
-    if (scanId) setNewScanId(scanId); // Trigger history refresh
+    if (scanId) setNewScanId(scanId); 
   };
 
   const handleAnalysisError = (error: string) => {
@@ -48,7 +47,7 @@ export default function HomePage() {
             {analysisError && (
               <Alert variant="destructive" className="border">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Analysis Error</AlertTitle>
+                <AlertTitle>বিশ্লেষণে ত্রুটি</AlertTitle> {/* Error */}
                 <AlertDescription>{analysisError}</AlertDescription>
               </Alert>
             )}
@@ -58,7 +57,7 @@ export default function HomePage() {
         <ScanHistorySection newScanId={newScanId} />
       </main>
       <footer className="py-6 text-center text-xs text-muted-foreground border-t border-border mt-auto">
-        <p>&copy; {currentYear || new Date().getFullYear().toString()} NutriSnap. Your AI Powered Nutrition Analyzer.</p>
+        <p>&copy; {currentYear || new Date().getFullYear().toString()} NutriSnap. আপনার এআই চালিত পুষ্টি বিশ্লেষক।</p> {/* Translated */}
       </footer>
     </div>
   );
