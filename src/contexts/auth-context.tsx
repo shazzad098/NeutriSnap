@@ -5,6 +5,7 @@ import type { User } from "firebase/auth";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signInAnonymously as firebaseSignInAnonymously, signOut as firebaseSignOut } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   user: User | null;
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true); // True until initial auth state is resolved
+  const { toast } = useToast();
 
   useEffect(() => {
     // Handles the initial determination of auth state.
@@ -36,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error("Automatic anonymous sign-in failed:", error);
         // If auto sign-in fails, user remains null.
         // The UI (e.g., Header) will reflect this based on the 'user' state.
+        // No toast here for automatic attempts to avoid being intrusive.
       });
       // Importantly, this automatic process does not toggle the global `loading` state
       // to prevent UI flicker. The `user` state will update via `onAuthStateChanged`
@@ -51,7 +54,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return userCredential.user;
     } catch (error) {
       console.error("Error signing in anonymously (manual):", error);
-      // User remains as is, or null if sign-in failed. `loading` remains false.
+      let errorMessage = "An unknown error occurred during sign-in.";
+      if (error instanceof Error) {
+        // Attempt to get a more specific message from Firebase error
+        // Common Firebase error codes: 'auth/invalid-api-key', 'auth/network-request-failed', 'auth/operation-not-allowed'
+        // @ts-ignore
+        if (error.code) {
+        // @ts-ignore
+          errorMessage = `Sign-in failed: ${error.code}. Please check your Firebase configuration, ensure anonymous sign-in is enabled in your Firebase console, and verify your network connection.`;
+        // @ts-ignore
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+      }
+      toast({
+        title: "Sign-In Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
       return null;
     }
   };
@@ -63,6 +83,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // `onAuthStateChanged` will set `user` to null. `loading` remains false.
     } catch (error) {
       console.error("Error signing out:", error);
+      let errorMessage = "An unknown error occurred during sign-out.";
+       if (error instanceof Error && error.message) {
+        errorMessage = error.message;
+      }
+      toast({
+        title: "Sign-Out Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
 
