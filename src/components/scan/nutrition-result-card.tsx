@@ -11,6 +11,7 @@ interface NutritionResultCardProps {
 export default function NutritionResultCard({ data }: NutritionResultCardProps) {
   if (!data) return null;
 
+  // Assuming data.nutritionInformation is now in Bangla and newline-separated
   const nutritionItems = data.nutritionInformation
     .split('\n')
     .map(item => item.trim())
@@ -27,6 +28,8 @@ export default function NutritionResultCard({ data }: NutritionResultCardProps) 
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-48 w-full rounded-lg border p-4 bg-muted/20">
+          <p className="text-sm font-semibold mb-3 text-foreground">খাবারের নাম: {data.foodName}</p> {/* Food Name: */}
+          
           <h4 className="font-semibold mb-2 text-foreground text-sm">বিস্তারিত তথ্য:</h4> {/* Detailed Information: */}
           {nutritionItems.length > 0 ? (
             <ul className="list-disc pl-5 space-y-1 text-sm text-foreground/90 font-sans leading-relaxed">

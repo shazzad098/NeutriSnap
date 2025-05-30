@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that analyzes a photo of food and provides nutritional information.
@@ -20,8 +21,8 @@ const AnalyzeFoodPhotoInputSchema = z.object({
 export type AnalyzeFoodPhotoInput = z.infer<typeof AnalyzeFoodPhotoInputSchema>;
 
 const AnalyzeFoodPhotoOutputSchema = z.object({
-  foodName: z.string().describe('The identified name of the food item.'),
-  nutritionInformation: z.string().describe('Detailed nutritional information for the food item.'),
+  foodName: z.string().describe('The identified name of the food item (e.g., in English or its common name).'),
+  nutritionInformation: z.string().describe('Detailed nutritional information for the food item, in Bangla language.'),
 });
 export type AnalyzeFoodPhotoOutput = z.infer<typeof AnalyzeFoodPhotoOutputSchema>;
 
@@ -33,11 +34,12 @@ const nutritionAnalysisPrompt = ai.definePrompt({
   name: 'nutritionAnalysisPrompt',
   input: {schema: AnalyzeFoodPhotoInputSchema},
   output: {schema: AnalyzeFoodPhotoOutputSchema},
-  prompt: `You are a nutritional expert. Analyze the provided food photo and provide detailed nutritional information.
+  prompt: `You are a nutritional expert. Analyze the provided food photo.
 
   Photo: {{media url=photoDataUri}}
   
-  Respond with the food name and its nutritional information.
+  Respond with the food name (in the language it is most commonly known, or English if unsure) and its detailed nutritional information IN BANGLA.
+  Ensure the nutritional information is comprehensive and clearly formatted.
   `,
 });
 
