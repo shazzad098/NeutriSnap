@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/layout/header";
 import ImageUploadForm from "@/components/scan/image-upload-form";
 import NutritionResultCard from "@/components/scan/nutrition-result-card";
@@ -13,6 +14,11 @@ export default function HomePage() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeFoodPhotoOutput | null>(null);
   const [analysisError, setAnalysisError] = useState<string>("");
   const [newScanId, setNewScanId] = useState<string | undefined>(undefined);
+  const [currentYear, setCurrentYear] = useState<number | string>("");
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
 
   const handleAnalysisComplete = (data: AnalyzeFoodPhotoOutput, scanId?: string) => {
@@ -51,7 +57,7 @@ export default function HomePage() {
         <ScanHistorySection newScanId={newScanId} />
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t border-border mt-auto">
-        <p>&copy; {new Date().getFullYear()} NutriSnap. Your AI Powered Nutrition Analyzer.</p>
+        <p>&copy; {currentYear || " "} NutriSnap. Your AI Powered Nutrition Analyzer.</p>
       </footer>
     </div>
   );
